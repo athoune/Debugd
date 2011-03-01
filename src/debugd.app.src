@@ -1,7 +1,11 @@
 {application, debugd,
  [
   {description, ""},
-  {vsn, "1"},
+  {vsn, "0.1"},
+  {modules, [
+    debugd_app,
+    debugd
+  ]},
   {registered, []},
   {applications, [
                   kernel,

@@ -14,4 +14,4 @@ Connect with some telnet
 
 Back to erlang
 
-	debugd:broadcast("Hello every telnet").
+	debugd:json('Hello every telnet').

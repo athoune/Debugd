@@ -1,4 +1,5 @@
--module(debugd).
+-module(broadcaster).
+-author("Mathieu Lecarme <mathieu@garambrogne.net>").
 -behaviour(gen_server).
 
 %% gen_server callbacks
@@ -6,7 +7,9 @@
          handle_info/2, terminate/2, code_change/3]).
 
 %% api callbacks
--export([start_link/0, broadcast/1, wait_connect/2]).
+-export([start_link/0, rawText/1]).
+
+-export([wait_connect/2]).
 
 -record(state, {socket, port, clients}).
 
@@ -100,9 +103,6 @@ handle_info(Info, State) ->
 terminate(_Reason, _State) ->
     ok.
 
-broadcast(Msg) ->
-    gen_server:cast(?MODULE, {broadcast, Msg}).
-
 wait_connect(ListenSocket, Count) ->
     {ok, Socket} = gen_tcp:accept(ListenSocket),
     {ok, Binary} = gen_tcp:recv(Socket, 0, 5000),
@@ -114,3 +114,6 @@ worker(Owner, Sock, Data) ->
     gen_tcp:send(Sock, "Moi je dis " ++ Data),
     inet:setopts(Sock, [{active, once}]),
     gen_tcp:controlling_process(Sock, Owner).
+
+rawText(Msg) ->
+    gen_server:cast(?MODULE, {broadcast, Msg}).    

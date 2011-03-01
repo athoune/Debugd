@@ -4,6 +4,8 @@
   {vsn, "0.1"},
   {modules, [
     debugd_app,
+    broadcaster,
+    mochijson2,
     debugd
   ]},
   {registered, []},

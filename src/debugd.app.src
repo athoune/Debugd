@@ -1,0 +1,12 @@
+{application, debugd,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { debugd_app, []}},
+  {env, []}
+ ]}.

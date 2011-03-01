@@ -8,7 +8,7 @@
 %% api callbacks
 -export([start_link/0, broadcast/1, wait_connect/2]).
 
--record(state, {socket, port}).
+-record(state, {socket, port, clients}).
 
 init([]) ->
     Port = 4807,
@@ -18,7 +18,8 @@ init([]) ->
             {ok, _Ref} = prim_inet:async_accept(Socket, -1),
             {ok, #state{
                 socket = Socket,
-                port = Port
+                port = Port,
+                clients = sets:new()
             }};
         {error, Reason} ->
             {stop, Reason}
@@ -55,8 +56,12 @@ handle_call(_Msg, _From, State) ->
 %%handle_cast({send, Who, Level, Msg}, State) ->
 %%    handle_cast({send, 0, Who, Level, Msg}, State);
 
-handle_cast({broadcast, Msg}, State) ->
-    io:format("~w says ~s\n", [self(), Msg]),
+handle_cast({broadcast, Msg}, #state{clients=Clients} = State) ->
+    sets:fold(fun(E, _AccIn) ->
+        gen_tcp:send(E, Msg ++ "\n"),
+        []
+        end, [], Clients),
+    io:format("~w says ~s\n~p\n", [self(), Msg, sets:to_list(Clients)]),
     {noreply, State};
 
 handle_cast(_, State) -> {noreply, State}.
@@ -73,12 +78,13 @@ handle_info({tcp, Sock, Data}, State) ->
     gen_tcp:controlling_process(Sock, P),
     {noreply, State};
 
-handle_info({inet_async, ListSock, _Ref, {ok, CliSocket}} = Info, State) ->
-    io:format("Info inet async:\n~p\n", [Info]),
+handle_info({inet_async, ListSock, _Ref, {ok, CliSocket}} = _Info, #state{clients=Clients, socket=Socket, port=Port} = _State) ->
+    %io:format("Info inet async:\n~p\n", [Info]),
     inet_db:register_socket(CliSocket, inet_tcp),
     inet:setopts(CliSocket, [{active, once}]),
     prim_inet:async_accept(ListSock, -1),
-    {noreply, State};
+    NewClients = sets:add_element(CliSocket, Clients),
+    {noreply, #state{clients=NewClients, socket=Socket, port=Port}};
 
 handle_info(Info, State) ->
     io:format("Info:\n~p\n", [Info]),
@@ -107,4 +113,4 @@ worker(Owner, Sock, Data) ->
     io:format("Socket : ~p \n", [Sock]),
     gen_tcp:send(Sock, "Moi je dis " ++ Data),
     inet:setopts(Sock, [{active, once}]),
-    gen_tcp:controlling_process(Sock, Owner).        
+    gen_tcp:controlling_process(Sock, Owner).

@@ -61,7 +61,7 @@ handle_call(_Msg, _From, State) ->
 
 handle_cast({broadcast, Msg}, #state{clients=Clients} = State) ->
     sets:fold(fun(E, _AccIn) ->
-        gen_tcp:send(E, Msg ++ "\n"),
+        gen_tcp:send(E, Msg),
         []
         end, [], Clients),
     io:format("~w says ~s\n~p\n", [self(), Msg, sets:to_list(Clients)]),
@@ -111,7 +111,7 @@ wait_connect(ListenSocket, Count) ->
 
 worker(Owner, Sock, Data) ->
     io:format("Socket : ~p \n", [Sock]),
-    gen_tcp:send(Sock, "Moi je dis " ++ Data),
+    %gen_tcp:send(Sock, "Moi je dis " ++ Data),
     inet:setopts(Sock, [{active, once}]),
     gen_tcp:controlling_process(Sock, Owner).
 

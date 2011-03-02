@@ -7,7 +7,7 @@
          handle_info/2, terminate/2, code_change/3]).
 
 %% api callbacks
--export([start_link/0, rawText/1]).
+-export([start_link/0, send_binary/1]).
 
 -export([wait_connect/2]).
 
@@ -109,11 +109,15 @@ wait_connect(ListenSocket, Count) ->
     io:format("recv: ~p", [Binary]),
     wait_connect(ListenSocket, Count+1).
 
-worker(Owner, Sock, Data) ->
+worker(Owner, Sock, _Data) ->
     io:format("Socket : ~p \n", [Sock]),
     %gen_tcp:send(Sock, "Moi je dis " ++ Data),
     inet:setopts(Sock, [{active, once}]),
     gen_tcp:controlling_process(Sock, Owner).
 
-rawText(Msg) ->
-    gen_server:cast(?MODULE, {broadcast, Msg}).    
+send_binary(Binary) ->
+    Size = size(Binary),
+    send_raw(iolist_to_binary([<<Size:32/unsigned-integer>> | Binary])).
+
+send_raw(Raw) ->
+    gen_server:cast(?MODULE, {broadcast, Raw}).

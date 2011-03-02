@@ -89,9 +89,20 @@ handle_info({inet_async, ListSock, _Ref, {ok, CliSocket}} = _Info, #state{client
     NewClients = sets:add_element(CliSocket, Clients),
     {noreply, #state{clients=NewClients, socket=Socket, port=Port}};
 
-handle_info(Info, State) ->
+%hande_info({tcp_closed, Sock}, State) ->
+%    #state{clients=Clients, socket=Socket, port=Port} = State,
+%    NewClients = sets:del_element(Sock, Clients),
+%    {noreply, #state{clients=NewClients, socket=Socket, port=Port}};
+
+handle_info(Info, #state{clients=Clients, socket=Socket, port=Port} = _State) ->
     io:format("Info:\n~p\n", [Info]),
-    {noreply, State}.
+    case Info of
+        {tcp_closed, Sock} ->
+            NewClients = sets:del_element(Sock, Clients);
+        _ ->
+            NewClients = Clients
+    end,
+    {noreply, #state{clients=NewClients, socket=Socket, port=Port}}.
 
 %%--------------------------------------------------------------------
 %% Function: terminate(Reason, State) -> void()

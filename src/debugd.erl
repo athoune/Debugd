@@ -4,4 +4,4 @@
 -export([json/1]).
 
 json(Data) ->
-    broadcaster:send_binary(list_to_binary(mochijson2:encode(Data))).
+    broadcaster:send_data(mochijson2:encode(Data)).

@@ -7,7 +7,7 @@
          handle_info/2, terminate/2, code_change/3]).
 
 %% api callbacks
--export([start_link/0, send_binary/1]).
+-export([start_link/0, send_data/1]).
 
 -export([wait_connect/2]).
 
@@ -64,7 +64,7 @@ handle_cast({broadcast, Msg}, #state{clients=Clients} = State) ->
         gen_tcp:send(E, Msg),
         []
         end, [], Clients),
-    io:format("~w says ~s\n~p\n", [self(), Msg, sets:to_list(Clients)]),
+    %io:format("~w says ~s\n~p\n", [self(), Msg, sets:to_list(Clients)]),
     {noreply, State};
 
 handle_cast(_, State) -> {noreply, State}.
@@ -126,9 +126,9 @@ worker(Owner, Sock, _Data) ->
     inet:setopts(Sock, [{active, once}]),
     gen_tcp:controlling_process(Sock, Owner).
 
-send_binary(Binary) ->
-    Size = size(Binary),
-    send_raw(iolist_to_binary([<<Size:32/unsigned-integer>> | Binary])).
+send_data(Binary) ->
+    {ok, Raw} = serialize:pack(Binary),
+    send_raw(Raw).
 
 send_raw(Raw) ->
     gen_server:cast(?MODULE, {broadcast, Raw}).

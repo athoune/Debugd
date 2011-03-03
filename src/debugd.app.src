@@ -6,7 +6,8 @@
     debugd_app,
     broadcaster,
     mochijson2,
-    debugd
+    debugd,
+    serialize
   ]},
   {registered, []},
   {applications, [

@@ -3,9 +3,21 @@
 import socket
 import struct
 import json
+import sys
+
+if len(sys.argv) > 1:
+	host = sys.argv[1]
+else:
+	host = 'localhost'
+if len(sys.argv) > 2:
+	port = int(sys.argv[2])
+else:
+	port = 4807
+
+print "Connecting %s:%i\n" % (host, port)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('localhost', 4807))
+s.connect((host, port))
 #s.send('')
 while 1:
 	size = struct.unpack("!I", s.recv(4))[0]

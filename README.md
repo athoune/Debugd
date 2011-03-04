@@ -14,4 +14,4 @@ Connect with the client
 
 Back to erlang
 
-	debugd:json('Hello every telnet').
+	debugd:message([{msg, 'Hello every telnet'}]).

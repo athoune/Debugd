@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+"""
+Simple client for debugd
+"""
+
+__author__  = "mathieu@garambrogne.net"
 
 import socket
 import struct

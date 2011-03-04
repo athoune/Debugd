@@ -1,16 +1,16 @@
 Debugd
 ======
 
-For now, it's a broadcast tool for clients connected with telnet
+For now, it's a broadcast tool for simple TCP clients
 
 Test
 ----
 
 	application:start(debugd).
 
-Connect with some telnet
+Connect with the client
 
-	telnet localhost 4807
+	./client.py localhost 4807
 
 Back to erlang
 

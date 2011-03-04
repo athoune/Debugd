@@ -11,7 +11,7 @@ message(Module, Line, Process, TagedDatas) ->
     message([
         {module, Module},
         {line, Line},
-        {process, io_lib:format("~w", [Process])}
+        {process, iolist_to_binary(io_lib:format("~w", [Process]))}
             | TagedDatas]).
 
 message(TagedDatas) ->

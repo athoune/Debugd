@@ -15,3 +15,10 @@ Connect with the client
 Back to erlang
 
 	debugd:message([{msg, 'Hello every telnet'}]).
+	
+Changelog
+---------
+
+__0.2__ macro, hidden serialization, basic api
+
+__0.1__ tcp server, broadcast, protocol, client
